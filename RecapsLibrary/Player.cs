@@ -17,9 +17,13 @@ namespace Recaps
         public string Class { get; set; }
         public string TeamName { get; set; }
         public string TeamFaction { get; set; }
+        public int DamageIn { get; set; }
+        public Team Team { get; set; }
+        public int RatingChange { get; set; }
 
         private String _name { get; set; }
         private String _server { get; set; }
+
 
         public String Name
         {
@@ -29,6 +33,8 @@ namespace Recaps
             }
             set { SplitFullyQualifiedPlayerName(value); }
         }
+
+        
 
         public string Server
         {
@@ -80,25 +86,60 @@ namespace Recaps
             }
         }
 
-        public static Player GeneratePlayer(Hashtable SavedVariables, int MatchNumber, int PlayerNumber)
+        public static Player GeneratePlayer(Hashtable SavedVariables, int MatchNumber, int PlayerNumber, string team, int version)
         {
-            string thisKey = "RUPTURE_SAVED/details/" + MatchNumber.ToString() + "/details/" + PlayerNumber.ToString();
-            if (SavedVariables[thisKey + "/server"] == null)
-                return null;
-
+            string thisKey = "";
             Player thisPlayer = new Player();
-            thisPlayer.DamageDone = Convert.ToInt32(SavedVariables[thisKey + "/damageDone"].ToString());
-            thisPlayer.Class = SavedVariables[thisKey + "/class"].ToString();
+
+            if (version == 1)
+            {
+                thisKey = "RECAPS_SAVED/details/" + MatchNumber.ToString() + "/details/" + PlayerNumber.ToString();
+                if (SavedVariables[thisKey + "/server"] == null)
+                    return null;
+                thisPlayer.TeamFaction = SavedVariables[thisKey + "/faction"].ToString();
+                thisPlayer.TeamName = SavedVariables[thisKey + "/team"].ToString();
+                thisPlayer.Server = SavedVariables[thisKey + "/server"].ToString();
+                thisPlayer.RatingChange = Convert.ToInt32(SavedVariables[thisKey + "/honorGained"].ToString());
+            }
+            else if (version == 2)
+            {
+                thisKey = "RECAPS_MATCHES/" + MatchNumber.ToString() + "/" + team + "/members/" + PlayerNumber.ToString();
+                if (SavedVariables[thisKey + "/name"] == null)
+                    return null;
+            }
+
             thisPlayer.KillingBlows = Convert.ToInt32(SavedVariables[thisKey + "/killingBlows"].ToString());
-            thisPlayer.Race = SavedVariables[thisKey + "/race"].ToString();
             thisPlayer.HealingDone = Convert.ToInt32(SavedVariables[thisKey + "/healingDone"].ToString());
             thisPlayer.Name = SavedVariables[thisKey + "/name"].ToString();
-            thisPlayer.TeamFaction = SavedVariables[thisKey + "/faction"].ToString();
-            thisPlayer.TeamName = SavedVariables[thisKey + "/team"].ToString();
-            thisPlayer.Server = SavedVariables[thisKey + "/server"].ToString();
+            thisPlayer.Class = SavedVariables[thisKey + "/class"].ToString();
+            thisPlayer.DamageDone = Convert.ToInt32(SavedVariables[thisKey + "/damageDone"].ToString());
+            thisPlayer.Race = SavedVariables[thisKey + "/race"].ToString();
+            thisPlayer.DamageIn = 0;
 
             return thisPlayer;
         }
-    }
 
+        public bool OnMyTeam(string guid)
+        {
+            if (Team.GUIDs.Contains(guid))
+                return true;
+            else
+                return false;
+        }
+
+        public string UrlName()
+        {
+            return UrlName("");
+        }
+
+        public string UrlName(string className)
+        {
+            string retVal = "<a ";
+            if (className.Length > 0)
+                retVal += "class=\"" + className + "\" ";
+
+            retVal += "href=\"http://www.wowarmory.com/character-sheet.xml?r=" + Server + "&n=" + Name + "\">" + Name + "</a>";
+            return retVal;
+        }
+    }
 }

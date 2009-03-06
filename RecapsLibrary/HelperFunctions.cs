@@ -13,9 +13,9 @@ namespace Recaps
         {
             TimeSpan thisSpan = new TimeSpan(0, 0, time);
             DateTime realTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, new System.Globalization.GregorianCalendar(), DateTimeKind.Utc) + thisSpan;
-            return realTime.ToLocalTime();
-
+            return realTime.ToUniversalTime();
         }
+
         public static Hashtable LuaToHash(string fileToRead)
         {
             StreamReader thisReader = new StreamReader(fileToRead);

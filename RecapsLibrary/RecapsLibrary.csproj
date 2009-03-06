@@ -45,6 +45,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CombatLog.cs" />
+    <Compile Include="Spell.cs" />
+    <Compile Include="SpellIcons.cs" />
     <Compile Include="EventResult.cs" />
     <Compile Include="HelperFunctions.cs" />
     <Compile Include="Match.cs" />
